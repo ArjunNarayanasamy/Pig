@@ -1,0 +1,14 @@
+inputLoad = LOAD 'pig/pigFile.txt' USING PigStorage(',') AS (Name:CharArray,Dis:CharArray,Days:int);
+criticalPatList = filter inputLoad by (Dis == 'Diar') AND (Days>5);
+dump criticalPatList;
+normalPatList = FILTER inputLoad by NOT(Dis=='Diar') OR ((Dis=='Diar') AND (Days<5));
+dump normalPatList;
+disease = FOREACH inputLoad GENERATE (Dis);
+dump disease;
+GroupBy = Group disease by  Dis;
+count = foreach GroupBy Generate group, COUNT(disease.Dis);
+dump count;
+order_By_Disease = Order count by $0;
+dump order_By_Disease;
+order_By_Count = Order count by $1;
+dump order_By_Count;
